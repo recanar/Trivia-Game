@@ -16,9 +16,9 @@ public class QuestionTest : MonoBehaviour
         Question question=ApiHelper.GetQuestions(Categories.Random_Questions);
         foreach (var item in question.results)
         {
-            Debug.Log(item.category);
-            print(item.question);
-            Debug.Log(item.correct_answer);
+            //Debug.Log(item.category);
+            //print(item.question);
+            //Debug.Log(item.correct_answer);
         }
         questionText.text = StripHTML(question.results[0].question);//use method for remove html entity codes
         categoryText.text = question.results[0].category.ToString();
