@@ -27,35 +27,35 @@ public static class ApiHelper
         }
         else if (category == Categories.General_Knowledge)
         {
-
+            request = (HttpWebRequest)WebRequest.Create("https://opentdb.com/api.php?amount=10&category=9&type=multiple");
         }
         else if (category == Categories.Books)
         {
-
+            request = (HttpWebRequest)WebRequest.Create("https://opentdb.com/api.php?amount=10&category=10&type=multiple");
         }
         else if (category == Categories.Film)
         {
-
+            request = (HttpWebRequest)WebRequest.Create("https://opentdb.com/api.php?amount=10&category=11&type=multiple");
         }
         else if (category == Categories.MusicalandTheatres)
         {
-
+            request = (HttpWebRequest)WebRequest.Create("https://opentdb.com/api.php?amount=10&category=12&type=multiple");
         }
         else if (category == Categories.Television)
         {
-
+            request = (HttpWebRequest)WebRequest.Create("https://opentdb.com/api.php?amount=10&category=13&type=multiple");
         }
         else if (category == Categories.Video_Games)
         {
-
+            request = (HttpWebRequest)WebRequest.Create("https://opentdb.com/api.php?amount=10&category=14&type=multiple");
         }
         else if (category == Categories.Board_Games)
         {
-
+            request = (HttpWebRequest)WebRequest.Create("https://opentdb.com/api.php?amount=10&category=15&type=multiple");
         }
         else if (category == Categories.Computers)
         {
-
+            request = (HttpWebRequest)WebRequest.Create("https://opentdb.com/api.php?amount=10&category=16&type=multiple");
         }
         HttpWebResponse response = (HttpWebResponse)request.GetResponse();
         StreamReader reader = new StreamReader(response.GetResponseStream());

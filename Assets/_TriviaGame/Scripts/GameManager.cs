@@ -4,18 +4,31 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject categoryPanel;
-    public GameObject menuPanel;
-    public GameObject questionPanel;
+    [SerializeField] private GameObject categoryPanel;
+    [SerializeField] private GameObject menuPanel;
+    [SerializeField] private GameObject questionPanel;
+    [SerializeField] private QuestionGenerator questionGenerator;
+    public static GameManager instance;
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+    }
     public void LoadCategoryPanel()
     {
         menuPanel.SetActive(false);
         categoryPanel.SetActive(true);
     }
-    public void LoadQuestions()
+    public void LoadQuestions(Categories category)
     {
+        questionGenerator.GenerateQuestion(category);
+        menuPanel.SetActive(false);
         categoryPanel.SetActive(false);
         questionPanel.SetActive(true);
+        //persist category
     }
     public void BackToMenu()
     {
