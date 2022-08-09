@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class GameManager : MonoBehaviour
@@ -9,7 +10,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject menuPanel;
     [SerializeField] private GameObject questionPanel;
 
-    [SerializeField] private GameObject selectedCategoryButton;
+    [SerializeField] private GameObject persistedCategoryButton;
+    [SerializeField] private Button randomCategoryButton;
     private TextMeshProUGUI selectedCategoryText;
     public static GameManager instance;
 
@@ -24,11 +26,13 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         //PlayerPrefs.DeleteAll();
-        selectedCategoryText =selectedCategoryButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-        if (PlayerPrefs.HasKey("selectedCategory"))
+        randomCategoryButton.onClick.AddListener(() => RandomCategoryButtonClick());
+        selectedCategoryText =persistedCategoryButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+        if (PlayerPrefs.HasKey("selectedCategoryId"))
         {
-            selectedCategoryButton.SetActive(true);
-            selectedCategoryText.text = "Play Category " +((Categories)PlayerPrefs.GetInt("selectedCategory")).ToString();
+            persistedCategoryButton.SetActive(true);
+            persistedCategoryButton.GetComponent<Button>().onClick.AddListener(() =>PersistCategoryButton());
+            selectedCategoryText.text = "Play "+ PlayerPrefs.GetString("selectedCategoryName");
         }
     }
     public void LoadCategoryPanel()//shows categories after clicked choose category button
@@ -36,10 +40,9 @@ public class GameManager : MonoBehaviour
         menuPanel.SetActive(false);
         categoryPanel.SetActive(true);
     }
-    public void LoadQuestions(Categories category)//Load questions after choose category
+    public void LoadQuestions(int id)//Load questions after choose category
     {
-        PlayerPrefs.SetInt("selectedCategory",(int)category);
-        QuestionManager.instance.GenerateQuestions(category);
+        QuestionManager.instance.GenerateQuestions(id);
         menuPanel.SetActive(false);
         categoryPanel.SetActive(false);
         questionPanel.SetActive(true);
@@ -48,5 +51,19 @@ public class GameManager : MonoBehaviour
     {
         menuPanel.SetActive(true);
         questionPanel.SetActive(false);
+        if (PlayerPrefs.HasKey("selectedCategoryId"))
+        {
+            persistedCategoryButton.SetActive(true);
+            persistedCategoryButton.GetComponent<Button>().onClick.AddListener(() => PersistCategoryButton());
+            selectedCategoryText.text = PlayerPrefs.GetString("selectedCategoryName");
+        }
+    }
+    public void PersistCategoryButton()
+    {
+        LoadQuestions(PlayerPrefs.GetInt("selectedCategoryId"));
+    }
+    public void RandomCategoryButtonClick()
+    {
+        LoadQuestions(-1);
     }
 }

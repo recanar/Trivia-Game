@@ -60,10 +60,10 @@ public class QuestionManager : MonoBehaviour
             button.onClick.AddListener(() => AnswerButtonClicked(button,btnText));//add click event to answer buttons
         }
     }
-    [HideInInspector]public void GenerateQuestions(Categories category)
+    [HideInInspector]public void GenerateQuestions(int id)
     {
-        currentQuestionIndex = 0;
-        question=ApiHelper.GetQuestions(category);
+        currentQuestionIndex = 0;//make current index 0 at start quiz
+        question=ApiHelper.GetQuestions(id);
         ShowNextQuestion();
     }
     private void ShowNextQuestion()
@@ -75,11 +75,7 @@ public class QuestionManager : MonoBehaviour
         answers.answerTexts[1].text = question.results[currentQuestionIndex].incorrect_answers[1].ToString();
         answers.answerTexts[2].text = question.results[currentQuestionIndex].incorrect_answers[2].ToString();
         answers.answerTexts[3].text = question.results[currentQuestionIndex].correct_answer.ToString();
-        if (currentQuestionIndex+1==question.results.Count)
-        {
-            currentQuestionIndex = 0;
-            GameManager.instance.BackToMenu();//game end back to menu
-        }
+        
     }
     public void AnswerButtonClicked(Button pressedButton ,TextMeshProUGUI btnPressedText)
     {
@@ -88,7 +84,6 @@ public class QuestionManager : MonoBehaviour
         pressedButton.interactable = true;
         if (btnPressedText.text == question.results[currentQuestionIndex].correct_answer.ToString())//compare chosen answer and correct answer
         {
-            print("correct");
             ChangeButtonColor(pressedButton, answers.correctAnswerColor);
             btnPressedText.color = Color.white;
             StartCoroutine(NextQuestionRoutine(AnswerStates.CorrectAnswer));
@@ -120,7 +115,6 @@ public class QuestionManager : MonoBehaviour
     {
         if (answerState==AnswerStates.WrongAnswer)
         {
-            print("Wrong");
         }
         yield return new WaitForSeconds(1);
         countdownPanel.SetActive(true);
@@ -141,7 +135,16 @@ public class QuestionManager : MonoBehaviour
         {
             answerText.color = answers.answerTextStartColor;
         }
-        ShowNextQuestion();
+
+        if (currentQuestionIndex == question.results.Count)
+        {
+            currentQuestionIndex = 0;
+            GameManager.instance.BackToMenu();//game end back to menu
+        }
+        else
+        {
+            ShowNextQuestion();
+        }
     }
     public string StripHTML(string input)
     {
