@@ -18,7 +18,7 @@ public enum Categories
 }
 public static class ApiHelper
 { 
-    public static Question GetQuestions(Categories category)
+    public static Question GetQuestions(Categories category)//fetch questions depend on category
     {
         HttpWebRequest request=null;
         if (category==Categories.Random_Questions)
