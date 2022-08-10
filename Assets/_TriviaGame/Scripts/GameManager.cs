@@ -32,7 +32,7 @@ public class GameManager : MonoBehaviour
         {
             persistedCategoryButton.SetActive(true);
             persistedCategoryButton.GetComponent<Button>().onClick.AddListener(() =>PersistCategoryButton());
-            selectedCategoryText.text = "Play "+ PlayerPrefs.GetString("selectedCategoryName");
+            selectedCategoryText.text = "Play " + PlayerPrefs.GetString("selectedCategoryName");
         }
     }
     public void LoadCategoryPanel()//shows categories after clicked choose category button

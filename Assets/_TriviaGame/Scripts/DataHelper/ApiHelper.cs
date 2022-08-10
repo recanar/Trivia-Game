@@ -1,21 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System.Net;
 using System.IO;
 
-public enum Categorieses
-{
-    Random_Questions,
-    General_Knowledge,
-    Books,
-    Film,
-    MusicalandTheatres,
-    Television,
-    Video_Games,
-    Board_Games,
-    Computers
-}
 public static class ApiHelper
 { 
     public static Question GetQuestions(int id)//fetch questions depend on category
@@ -34,7 +20,6 @@ public static class ApiHelper
         string json = reader.ReadToEnd();
         return JsonUtility.FromJson<Question>(json);
     }
-
     public static Category GetCategories()
     {
         HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://opentdb.com/api_category.php");

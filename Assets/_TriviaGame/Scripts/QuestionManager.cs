@@ -15,7 +15,7 @@ public class QuestionManager : MonoBehaviour
         CorrectAnswer
     }
     [System.Serializable]
-    private class Answers 
+    private class Answers
     {
         public List<Button> answerButtons;
         [HideInInspector] public List<TextMeshProUGUI> answerTexts;
@@ -42,14 +42,15 @@ public class QuestionManager : MonoBehaviour
 
     private int currentQuestionIndex;
     private Question question;
+    private Coroutine noAnswerRoutine;//stop if got answered
 
     private void Awake()
     {
-        if (instance==null)
+        if (instance == null)
         {
             instance = this;
         }
-        
+
     }
     private void Start()
     {
@@ -57,27 +58,33 @@ public class QuestionManager : MonoBehaviour
         {
             var btnText = button.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
             answers.answerTexts.Add(btnText);//get buttons' texts
-            button.onClick.AddListener(() => AnswerButtonClicked(button,btnText));//add click event to answer buttons
+            button.onClick.AddListener(() => AnswerButtonClicked(button, btnText));//add click event to answer buttons
         }
     }
-    [HideInInspector]public void GenerateQuestions(int id)
+    [HideInInspector]
+    public void GenerateQuestions(int id)
     {
         currentQuestionIndex = 0;//make current index 0 at start quiz
-        question=ApiHelper.GetQuestions(id);
+        question = ApiHelper.GetQuestions(id);
         ShowNextQuestion();
     }
     private void ShowNextQuestion()
     {
-        questionNumberText.text = (currentQuestionIndex+1)+"/10";
+        questionNumberText.text = (currentQuestionIndex + 1) + "/10";
         questionText.text = StripHTML(question.results[currentQuestionIndex].question);//using striphtml method for remove html entity codes
         categoryText.text = question.results[currentQuestionIndex].category.ToString();
         answers.answerTexts[0].text = question.results[currentQuestionIndex].incorrect_answers[0].ToString();
         answers.answerTexts[1].text = question.results[currentQuestionIndex].incorrect_answers[1].ToString();
         answers.answerTexts[2].text = question.results[currentQuestionIndex].incorrect_answers[2].ToString();
         answers.answerTexts[3].text = question.results[currentQuestionIndex].correct_answer.ToString();
-        
+        noAnswerRoutine= StartCoroutine(CheckNoAnswer());
     }
-    public void AnswerButtonClicked(Button pressedButton ,TextMeshProUGUI btnPressedText)
+    private IEnumerator CheckNoAnswer()
+    {
+        yield return new WaitForSeconds(60);
+        StartCoroutine(NextQuestionRoutine(AnswerStates.NoAnswer));
+    }
+    public void AnswerButtonClicked(Button pressedButton, TextMeshProUGUI btnPressedText)
     {
         showAnswerPanel.SetActive(true);
         pressedButton.interactable = false;//deselect button
@@ -90,7 +97,7 @@ public class QuestionManager : MonoBehaviour
         }
         else
         {
-            ChangeButtonColor(pressedButton,answers.wrongAnswerColor);
+            ChangeButtonColor(pressedButton, answers.wrongAnswerColor);
             btnPressedText.color = Color.white;
             StartCoroutine(NextQuestionRoutine(AnswerStates.WrongAnswer));
             for (int i = 0; i < answers.answerTexts.Count; i++)
@@ -113,12 +120,10 @@ public class QuestionManager : MonoBehaviour
     }
     private IEnumerator NextQuestionRoutine(AnswerStates answerState)
     {
-        if (answerState==AnswerStates.WrongAnswer)
-        {
-        }
+        StopCoroutine(noAnswerRoutine);
         yield return new WaitForSeconds(1);
         countdownPanel.SetActive(true);
-        countdownText.text = "Next question After:\n"+3+" Seconds";
+        countdownText.text = "Next question After:\n" + 3 + " Seconds";
         yield return new WaitForSeconds(1);
         countdownText.text = "Next question After:\n" + 2 + " Seconds";
         yield return new WaitForSeconds(1);
@@ -127,7 +132,7 @@ public class QuestionManager : MonoBehaviour
         showAnswerPanel.SetActive(false);
         countdownPanel.SetActive(false);
         currentQuestionIndex++;
-        foreach(var button in answers.answerButtons)//reset colors before load new question
+        foreach (var button in answers.answerButtons)//reset colors before load new question
         {
             ChangeButtonColor(button, answers.buttonStartColor);
         }
