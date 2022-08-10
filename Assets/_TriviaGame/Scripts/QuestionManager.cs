@@ -5,6 +5,7 @@ using TMPro;
 using System.Text.RegularExpressions;
 using System;
 using UnityEngine.UI;
+using System.Web;
 
 public class QuestionManager : MonoBehaviour
 {
@@ -39,6 +40,8 @@ public class QuestionManager : MonoBehaviour
 
     [SerializeField] private Answers answers;
 
+    [SerializeField] private Button nextQuestionButton;
+
 
     private int currentQuestionIndex;
     private Question question;
@@ -71,12 +74,12 @@ public class QuestionManager : MonoBehaviour
     private void ShowNextQuestion()
     {
         questionNumberText.text = (currentQuestionIndex + 1) + "/10";
-        questionText.text = StripHTML(question.results[currentQuestionIndex].question);//using striphtml method for remove html entity codes
-        categoryText.text = question.results[currentQuestionIndex].category.ToString();
-        answers.answerTexts[0].text = question.results[currentQuestionIndex].incorrect_answers[0].ToString();
-        answers.answerTexts[1].text = question.results[currentQuestionIndex].incorrect_answers[1].ToString();
-        answers.answerTexts[2].text = question.results[currentQuestionIndex].incorrect_answers[2].ToString();
-        answers.answerTexts[3].text = question.results[currentQuestionIndex].correct_answer.ToString();
+        questionText.text = HttpUtility.HtmlDecode(question.results[currentQuestionIndex].question);//using striphtml method for remove html entity codes
+        categoryText.text = question.results[currentQuestionIndex].category;
+        answers.answerTexts[0].text = HttpUtility.HtmlDecode(question.results[currentQuestionIndex].incorrect_answers[0]);
+        answers.answerTexts[1].text = HttpUtility.HtmlDecode(question.results[currentQuestionIndex].incorrect_answers[1]);
+        answers.answerTexts[2].text = HttpUtility.HtmlDecode(question.results[currentQuestionIndex].incorrect_answers[2]);
+        answers.answerTexts[3].text = HttpUtility.HtmlDecode(question.results[currentQuestionIndex].correct_answer);
         noAnswerRoutine= StartCoroutine(CheckNoAnswer());
     }
     private IEnumerator CheckNoAnswer()
@@ -86,6 +89,7 @@ public class QuestionManager : MonoBehaviour
     }
     public void AnswerButtonClicked(Button pressedButton, TextMeshProUGUI btnPressedText)
     {
+        StopCoroutine(noAnswerRoutine);
         showAnswerPanel.SetActive(true);
         pressedButton.interactable = false;//deselect button
         pressedButton.interactable = true;
@@ -94,12 +98,20 @@ public class QuestionManager : MonoBehaviour
             ChangeButtonColor(pressedButton, answers.correctAnswerColor);
             btnPressedText.color = Color.white;
             StartCoroutine(NextQuestionRoutine(AnswerStates.CorrectAnswer));
+            ChangeButtonColor(nextQuestionButton, answers.correctAnswerColor);
+            nextQuestionButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().color = Color.white;
+            nextQuestionButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "Correct";
+            countdownPanel.SetActive(true);
         }
         else
         {
             ChangeButtonColor(pressedButton, answers.wrongAnswerColor);
             btnPressedText.color = Color.white;
             StartCoroutine(NextQuestionRoutine(AnswerStates.WrongAnswer));
+            ChangeButtonColor(nextQuestionButton,answers.wrongAnswerColor);
+            nextQuestionButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().color = Color.white;
+            nextQuestionButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "Wrong";
+            countdownPanel.SetActive(true);
             for (int i = 0; i < answers.answerTexts.Count; i++)
             {
                 if (answers.answerTexts[i].text == question.results[currentQuestionIndex].correct_answer.ToString())
@@ -120,14 +132,17 @@ public class QuestionManager : MonoBehaviour
     }
     private IEnumerator NextQuestionRoutine(AnswerStates answerState)
     {
-        StopCoroutine(noAnswerRoutine);
         yield return new WaitForSeconds(1);
-        countdownPanel.SetActive(true);
-        countdownText.text = "Next question After:\n" + 3 + " Seconds";
+
+        ChangeButtonColor(nextQuestionButton, answers.buttonStartColor);
+        nextQuestionButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "Next question After:" + 3 + " Seconds";
+        //countdownText.text = "Next question After:\n" + 3 + " Seconds";
         yield return new WaitForSeconds(1);
-        countdownText.text = "Next question After:\n" + 2 + " Seconds";
+        nextQuestionButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "Next question After:" + 2 + " Seconds";
+        //countdownText.text = "Next question After:\n" + 2 + " Seconds";
         yield return new WaitForSeconds(1);
-        countdownText.text = "Next question After:\n" + 1 + " Seconds";
+        nextQuestionButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "Next question After:" + 1 + " Seconds";
+        //countdownText.text = "Next question After:\n" + 1 + " Seconds";
         yield return new WaitForSeconds(1);
         showAnswerPanel.SetActive(false);
         countdownPanel.SetActive(false);
@@ -140,7 +155,6 @@ public class QuestionManager : MonoBehaviour
         {
             answerText.color = answers.answerTextStartColor;
         }
-
         if (currentQuestionIndex == question.results.Count)
         {
             currentQuestionIndex = 0;
