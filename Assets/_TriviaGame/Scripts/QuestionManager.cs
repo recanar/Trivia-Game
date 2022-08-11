@@ -18,7 +18,6 @@ public class QuestionManager : MonoBehaviour
     public QuestionScreenUI questionScreen;
 
     [SerializeField] private GameObject quitPanel;
-    [SerializeField] private GameObject countdownPanel;
 
     private int currentQuestionIndex;
     private Question question;
@@ -53,24 +52,23 @@ public class QuestionManager : MonoBehaviour
     {
         yield return new WaitForSeconds(60);
         StartCoroutine(NextQuestionRoutine());
+        questionScreen.NoAnswer();
+    }
+    public void DisplayAnswerClicked()
+    {
+        StartCoroutine(NextQuestionRoutine());
+        questionScreen.NoAnswer();
     }
     public void AnswerButtonClicked(Button pressedButton, TextMeshProUGUI btnPressedText)
     {
-        StopCoroutine(noAnswerRoutine);
-        foreach (var btn in answers.answerButtons)
-        {
-            btn.interactable = false;
-        }
+        StopCoroutine(noAnswerRoutine);//stop timer for question countdown
+        StartCoroutine(NextQuestionRoutine());
         if (btnPressedText.text == question.results[currentQuestionIndex].correct_answer.ToString())//compare chosen answer and correct answer
         {
-            StartCoroutine(NextQuestionRoutine());
-            countdownPanel.SetActive(true);
             questionScreen.CorrectAnswer();//correct answer UI 
         }
         else
         {
-            StartCoroutine(NextQuestionRoutine());
-            countdownPanel.SetActive(true);
             questionScreen.WrongAnswer(pressedButton,btnPressedText);//wrong answer UI
         }
     }
@@ -79,9 +77,8 @@ public class QuestionManager : MonoBehaviour
         yield return new WaitForSeconds(1);
         questionScreen.NextQuestionCountdownStart();//UI
         yield return new WaitForSeconds(3);
-        countdownPanel.SetActive(false);
-        currentQuestionIndex++;
         questionScreen.NextQuestionCountdownEnd();//UI
+        currentQuestionIndex++;
         if (currentQuestionIndex == question.results.Count)
         {
             currentQuestionIndex = 0;

@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Net;
 using System.IO;
+using System.Linq;
 
 public static class ApiHelper
 { 
@@ -26,6 +27,9 @@ public static class ApiHelper
         HttpWebResponse response = (HttpWebResponse)request.GetResponse();
         StreamReader reader = new StreamReader(response.GetResponseStream());
         string json = reader.ReadToEnd();
-        return JsonUtility.FromJson<Category>(json);
+        var categories= JsonUtility.FromJson<Category>(json);
+        var sortedList= categories.trivia_categories.OrderBy(category=>category.name);//sort by name
+        categories.trivia_categories = sortedList.ToList();
+        return categories;
     }
 }

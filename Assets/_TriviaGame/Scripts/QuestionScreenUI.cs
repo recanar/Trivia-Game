@@ -39,27 +39,30 @@ public class QuestionScreenUI : MonoBehaviour
     }
     public void PrintQuestionScreen(int questionIndex)
     {
+        answerButtons[3].transform.SetSiblingIndex(Random.Range(0, 4));//shuffle questions
         PrintCategory(questionIndex);
         PrintQuestionNumber(questionIndex);
         PrintQuestion(questionIndex);
         PrintAnswerTexts(questionIndex);
+        nextQuestionButton.interactable = true;
+        nextQuestionButtonText.text = "Display Answer";
     }
     public void CorrectAnswer()
     {
-        clickBlockPanel.gameObject.SetActive(true);
-        answerTexts[3].color = Color.white;
-        ChangeButtonColor(answerButtons[3], correctAnswerColor);
+        QuestionAnswered();
         ChangeButtonColor(nextQuestionButton, correctAnswerColor);
         nextQuestionButtonText.color = Color.white;
         nextQuestionButtonText.text = "Correct";
     }
+    public void NoAnswer()
+    {
+        QuestionAnswered();
+    }
     public void WrongAnswer(Button pressedButton, TextMeshProUGUI btnPressedText)
     {
-        clickBlockPanel.gameObject.SetActive(true);
+        QuestionAnswered();
         ChangeButtonColor(pressedButton, wrongAnswerColor);
         btnPressedText.color = Color.white;
-        ChangeButtonColor(answerButtons[3], correctAnswerColor);
-        answerTexts[3].color = Color.white;
         ChangeButtonColor(nextQuestionButton, wrongAnswerColor);
         nextQuestionButtonText.color = Color.white;
         nextQuestionButtonText.text = "Wrong";
@@ -67,12 +70,21 @@ public class QuestionScreenUI : MonoBehaviour
     public void NextQuestionCountdownStart()
     {
         ChangeButtonColor(nextQuestionButton, buttonStartColor);
-        nextQuestionButtonText.color = Color.gray;
+        nextQuestionButtonText.color = answerTextStartColor;
+        StartCoroutine(CountDown());
+    }
+    private IEnumerator CountDown()
+    {
         nextQuestionButtonText.text = "Next question After:" + 3 + " Seconds";
+        yield return new WaitForSeconds(1f);
+        nextQuestionButtonText.text = "Next question After:" + 2 + " Seconds";
+        yield return new WaitForSeconds(1f);
+        nextQuestionButtonText.text = "Next question After:" + 1 + " Seconds";
     }
     public void NextQuestionCountdownEnd()
     {
         clickBlockPanel.SetActive(false);
+        nextQuestionButton.interactable = true;
         foreach (var button in answerButtons)//reset colors before load new question
         {
             ChangeButtonColor(button, buttonStartColor);
@@ -107,5 +119,16 @@ public class QuestionScreenUI : MonoBehaviour
         ColorBlock colorVar = btn.colors;
         colorVar.disabledColor = color;
         btn.colors = colorVar;
+    }
+    private void QuestionAnswered()
+    {
+        foreach (var btn in answerButtons)
+        {
+            btn.interactable = false;
+        }
+        nextQuestionButton.interactable = false;
+        clickBlockPanel.gameObject.SetActive(true);
+        ChangeButtonColor(answerButtons[3], correctAnswerColor);
+        answerTexts[3].color = Color.white;
     }
 }

@@ -28,12 +28,7 @@ public class GameManager : MonoBehaviour
         //PlayerPrefs.DeleteAll();
         randomCategoryButton.onClick.AddListener(() => RandomCategoryButtonClick());
         selectedCategoryText =persistedCategoryButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-        if (PlayerPrefs.HasKey("selectedCategoryId"))
-        {
-            persistedCategoryButton.SetActive(true);
-            persistedCategoryButton.GetComponent<Button>().onClick.AddListener(() =>PersistCategoryButton());
-            selectedCategoryText.text = "Play " + PlayerPrefs.GetString("selectedCategoryName");
-        }
+        CheckPersistCategory();
     }
     public void LoadCategoryPanel()//shows categories after clicked choose category button
     {
@@ -51,12 +46,7 @@ public class GameManager : MonoBehaviour
     {
         menuPanel.SetActive(true);
         questionPanel.SetActive(false);
-        if (PlayerPrefs.HasKey("selectedCategoryId"))
-        {
-            persistedCategoryButton.SetActive(true);
-            persistedCategoryButton.GetComponent<Button>().onClick.AddListener(() => PersistCategoryButton());
-            selectedCategoryText.text = PlayerPrefs.GetString("selectedCategoryName");
-        }
+        CheckPersistCategory();
     }
     public void PersistCategoryButton()
     {
@@ -65,5 +55,14 @@ public class GameManager : MonoBehaviour
     public void RandomCategoryButtonClick()
     {
         LoadQuestions(-1);
+    }
+    private void CheckPersistCategory()
+    {
+        if (PlayerPrefs.HasKey("selectedCategoryId"))
+        {
+            persistedCategoryButton.SetActive(true);
+            persistedCategoryButton.GetComponent<Button>().onClick.AddListener(() => PersistCategoryButton());
+            selectedCategoryText.text = PlayerPrefs.GetString("selectedCategoryName");
+        }
     }
 }
