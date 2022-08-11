@@ -18,6 +18,7 @@ public class QuestionManager : MonoBehaviour
     public QuestionScreenUI questionScreen;
 
     [SerializeField] private GameObject quitPanel;
+    [SerializeField] private GameObject completedPanel;
 
     private int currentQuestionIndex;
     private Question question;
@@ -54,7 +55,7 @@ public class QuestionManager : MonoBehaviour
         StartCoroutine(NextQuestionRoutine());
         questionScreen.NoAnswer();
     }
-    public void DisplayAnswerClicked()
+    public void DisplayAnswerClicked()//event on display answer button clicked
     {
         StartCoroutine(NextQuestionRoutine());
         questionScreen.NoAnswer();
@@ -82,7 +83,7 @@ public class QuestionManager : MonoBehaviour
         if (currentQuestionIndex == question.results.Count)
         {
             currentQuestionIndex = 0;
-            GameManager.instance.BackToMenu();//game end back to menu
+            completedPanel.SetActive(true);
         }
         else
         {
@@ -96,5 +97,9 @@ public class QuestionManager : MonoBehaviour
     public void CloseQuitPanel()
     {
         quitPanel.SetActive(false);
+    }
+    public void CloseCompletedPanel()
+    {
+        completedPanel.SetActive(false);
     }
 }
