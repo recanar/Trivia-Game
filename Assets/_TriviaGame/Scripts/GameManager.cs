@@ -60,9 +60,9 @@ public class GameManager : MonoBehaviour
     {
         if (PlayerPrefs.HasKey("selectedCategoryId"))
         {
-            persistedCategoryButton.SetActive(true);
+            persistedCategoryButton.transform.parent.gameObject.SetActive(true);
             persistedCategoryButton.GetComponent<Button>().onClick.AddListener(() => PersistCategoryButton());
-            selectedCategoryText.text = PlayerPrefs.GetString("selectedCategoryName");
+            selectedCategoryText.text = "Play Category:"+PlayerPrefs.GetString("selectedCategoryName");
         }
     }
 }

@@ -1,10 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-using System;
-using System.Linq;
 
 public class CategoryScreen : MonoBehaviour
 {
@@ -12,7 +9,7 @@ public class CategoryScreen : MonoBehaviour
     [SerializeField] private List<Button> buttons;
     [SerializeField] private List<TextMeshProUGUI> buttonTexts;
     [SerializeField] private TMP_InputField inputText;
-    private void Start()
+    private void Awake()
     {
         Category categories = ApiHelper.GetCategories();
         foreach (var categoryName in categories.trivia_categories)
@@ -32,10 +29,8 @@ public class CategoryScreen : MonoBehaviour
     }
     public void SearchCategory()
     {
-        
         for (int i = 0; i < buttonTexts.Count; i++)
         {
-            //Debug.Log("Buttontext:"+buttonTexts[i].text+"       inputtext:"+inputText.text);
             if (!(buttonTexts[i].text.Contains(inputText.text)))
             {
                 buttons[i].gameObject.SetActive(false);
