@@ -14,6 +14,7 @@ public class QuestionScreenUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI categoryText;
     [SerializeField] private GameObject clickBlockPanel;
     [SerializeField] private Button nextQuestionButton;
+    [SerializeField] private GameObject loadingPanel;
     private TextMeshProUGUI nextQuestionButtonText;
     public List<Button> answerButtons;
     public List<TextMeshProUGUI> answerTexts;
@@ -35,7 +36,13 @@ public class QuestionScreenUI : MonoBehaviour
     public void SendQuestionData(Question questions,int questionIndex)
     {
         questionsData=questions;
-        PrintQuestionScreen(questionIndex);
+        loadingPanel.SetActive(false);
+        PrintQuestionScreen(questionIndex);//show after response
+    }
+
+    public void LoadingUI()
+    {
+        loadingPanel.SetActive(true);
     }
     public void PrintQuestionScreen(int questionIndex)
     {

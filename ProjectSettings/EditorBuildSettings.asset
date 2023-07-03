@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/_TriviaGame/Scenes/SampleScene.unity
+    guid: 3fbc19a8258718f428d1b9ace50c244b
   m_configObjects: {}

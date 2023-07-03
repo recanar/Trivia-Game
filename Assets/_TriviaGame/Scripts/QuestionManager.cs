@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
@@ -19,6 +21,8 @@ public class QuestionManager : MonoBehaviour
 
     [SerializeField] private GameObject quitPanel;
     [SerializeField] private GameObject completedPanel;
+    [SerializeField] private TextMeshProUGUI errorText;
+    [SerializeField] private GameObject errorPanel;
 
     private int currentQuestionIndex;
     private Question question;
@@ -41,13 +45,24 @@ public class QuestionManager : MonoBehaviour
         }
     }
     [HideInInspector]
-    public void GenerateQuestions(int id)
+    public async Task GenerateQuestions(int id)
     {
         currentQuestionIndex = 0;//make current index 0 at start quiz
-        question = ApiHelper.GetQuestions(id);//get data from api
+        
+        questionScreen.LoadingUI();
+        try
+        {
+            question =await ApiHelper.GetQuestions(id);//get data from api
+            questionScreen.SendQuestionData(question,currentQuestionIndex);//send data to UI manager and question Ui
+            noAnswerRoutine = StartCoroutine(NoAnswerCheckRoutine());//start question countdown after question appeared
+        }
+        catch (Exception e)
+        {
+            errorPanel.SetActive(true);
+            errorText.text = e.Message;//show error in user ui
+            throw e;
+        }
 
-        questionScreen.SendQuestionData(question,currentQuestionIndex);//send data to UI manager and question Ui
-        noAnswerRoutine = StartCoroutine(NoAnswerCheckRoutine());//start question countdown after question appeared
     }
     private IEnumerator NoAnswerCheckRoutine()
     {

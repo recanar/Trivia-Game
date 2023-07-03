@@ -1,11 +1,14 @@
+using System;
 using UnityEngine;
 using System.Net;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using UnityEditor.VersionControl;
 
 public static class ApiHelper
 { 
-    public static Question GetQuestions(int id)//fetch questions depend on category
+    public static async Task<Question> GetQuestions(int id)//fetch questions depend on category
     {
         HttpWebRequest request=null;
         if (id==-1)//random category id
@@ -16,11 +19,30 @@ public static class ApiHelper
         {
             request = (HttpWebRequest)WebRequest.Create("https://opentdb.com/api.php?amount=10&category=" + id + "&type=multiple");
         }
-        HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-        StreamReader reader = new StreamReader(response.GetResponseStream());
-        string json = reader.ReadToEnd();
-        return JsonUtility.FromJson<Question>(json);
+
+        try
+        {
+            var response =await request.GetResponseAsync();
+            var httpResponse = (HttpWebResponse)response;
+            if (httpResponse.StatusCode == HttpStatusCode.OK)
+            {
+                StreamReader reader = new StreamReader(response.GetResponseStream());
+        
+                string json = reader.ReadToEnd();
+                return JsonUtility.FromJson<Question>(json);
+            }
+            
+            throw new Exception(message:"Error");
+            
+        }
+        catch (Exception e)
+        {
+            throw e;
+        }
+        
+        
     }
+    
     public static Category GetCategories()
     {
         HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://opentdb.com/api_category.php");

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -35,12 +36,20 @@ public class GameManager : MonoBehaviour
         menuPanel.SetActive(false);
         categoryPanel.SetActive(true);
     }
-    public void LoadQuestions(int id)//Load questions after choose category
+    public async void LoadQuestions(int id)//Load questions after choose category
     {
-        QuestionManager.instance.GenerateQuestions(id);
-        menuPanel.SetActive(false);
-        categoryPanel.SetActive(false);
-        questionPanel.SetActive(true);
+        try
+        {
+            await QuestionManager.instance.GenerateQuestions(id);
+            menuPanel.SetActive(false);
+            categoryPanel.SetActive(false);
+            questionPanel.SetActive(true);
+        }
+        catch (Exception e)
+        {
+            
+            Debug.Log("Catched exception:"+e.Message);
+        }
     }
     public void BackToMenu()
     {
